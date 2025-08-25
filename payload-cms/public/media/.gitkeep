@@ -1,0 +1,2 @@
+# This file ensures the media directory is tracked in git
+# while allowing uploads to be excluded via .gitignore

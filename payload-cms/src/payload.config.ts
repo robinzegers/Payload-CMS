@@ -71,6 +71,7 @@ export default buildConfig({
     multiTenantPlugin<Config>({
       collections: {
         pages: {},
+        media: {},
         navigation: {
           isGlobal: true,
         },
