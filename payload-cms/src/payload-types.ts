@@ -171,6 +171,154 @@ export interface Tenant {
    * If checked, logging in is not required to read. Useful for building public pages.
    */
   allowPublicRead?: boolean | null;
+  /**
+   * Campaign and market configuration
+   */
+  campaignSettings?: {
+    /**
+     * Unique identifier for the campaign
+     */
+    campaignId?: string | null;
+    /**
+     * Market identifier for this tenant
+     */
+    market?: string | null;
+  };
+  /**
+   * Game-specific configuration
+   */
+  gameSettings?: {
+    /**
+     * Unique game key identifier
+     */
+    gameKey?: string | null;
+    /**
+     * Supported languages for this tenant
+     */
+    languages?:
+      | {
+          language: 'en' | 'es' | 'fr' | 'de' | 'nl' | 'it' | 'pt' | 'zh' | 'ja' | 'ko';
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Registration and redemption configuration
+   */
+  registrationSettings?: {
+    /**
+     * Enable external registration system integration
+     */
+    externalRegistration?: boolean | null;
+    /**
+     * Enable QR code redemption functionality
+     */
+    enableQrRedeem?: boolean | null;
+    /**
+     * Enable code claim functionality
+     */
+    enableCodeClaim?: boolean | null;
+    /**
+     * Custom fields for code claim process
+     */
+    codeClaimFields?:
+      | {
+          /**
+           * Name of the field
+           */
+          fieldName: string;
+          fieldType: 'text' | 'email' | 'number' | 'date' | 'select' | 'checkbox';
+          required?: boolean | null;
+          /**
+           * Placeholder text for the field
+           */
+          placeholder?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Campaign timeline and timezone settings
+   */
+  timelineSettings?: {
+    /**
+     * Campaign start date and time
+     */
+    startDate?: string | null;
+    /**
+     * Campaign end date and time
+     */
+    endDate?: string | null;
+    /**
+     * Primary timezone for this tenant
+     */
+    countryTimezone?:
+      | (
+          | 'UTC'
+          | 'America/New_York'
+          | 'America/Chicago'
+          | 'America/Denver'
+          | 'America/Los_Angeles'
+          | 'Europe/London'
+          | 'Europe/Paris'
+          | 'Europe/Berlin'
+          | 'Europe/Amsterdam'
+          | 'Asia/Tokyo'
+          | 'Asia/Shanghai'
+          | 'Asia/Seoul'
+          | 'Australia/Sydney'
+        )
+      | null;
+  };
+  /**
+   * Analytics and external integrations
+   */
+  analyticsSettings?: {
+    /**
+     * Looker Studio connector configuration
+     */
+    lookerStudioConnector?: string | null;
+  };
+  /**
+   * Geographic and location settings
+   */
+  locationSettings?: {
+    /**
+     * ISO country code for this tenant
+     */
+    countryCode?:
+      | ('US' | 'CA' | 'GB' | 'DE' | 'FR' | 'ES' | 'IT' | 'NL' | 'BE' | 'AU' | 'JP' | 'KR' | 'CN' | 'BR' | 'MX')
+      | null;
+  };
+  /**
+   * Data collection and purpose configuration
+   */
+  dataSettings?: {
+    /**
+     * Collection identifier for data organization
+     */
+    collectionId?: string | null;
+    /**
+     * Purpose identifiers for data processing
+     */
+    purposeIds?:
+      | {
+          /**
+           * Purpose ID for data collection
+           */
+          purposeId: string;
+          /**
+           * Description of the purpose
+           */
+          description?: string | null;
+          /**
+           * Is this purpose required?
+           */
+          required?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -220,6 +368,7 @@ export interface Page {
   status?: ('draft' | 'published') | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -353,6 +502,69 @@ export interface TenantsSelect<T extends boolean = true> {
   slug?: T;
   domain?: T;
   allowPublicRead?: T;
+  campaignSettings?:
+    | T
+    | {
+        campaignId?: T;
+        market?: T;
+      };
+  gameSettings?:
+    | T
+    | {
+        gameKey?: T;
+        languages?:
+          | T
+          | {
+              language?: T;
+              id?: T;
+            };
+      };
+  registrationSettings?:
+    | T
+    | {
+        externalRegistration?: T;
+        enableQrRedeem?: T;
+        enableCodeClaim?: T;
+        codeClaimFields?:
+          | T
+          | {
+              fieldName?: T;
+              fieldType?: T;
+              required?: T;
+              placeholder?: T;
+              id?: T;
+            };
+      };
+  timelineSettings?:
+    | T
+    | {
+        startDate?: T;
+        endDate?: T;
+        countryTimezone?: T;
+      };
+  analyticsSettings?:
+    | T
+    | {
+        lookerStudioConnector?: T;
+      };
+  locationSettings?:
+    | T
+    | {
+        countryCode?: T;
+      };
+  dataSettings?:
+    | T
+    | {
+        collectionId?: T;
+        purposeIds?:
+          | T
+          | {
+              purposeId?: T;
+              description?: T;
+              required?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -386,6 +598,7 @@ export interface PagesSelect<T extends boolean = true> {
   status?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,6 +1,20 @@
-# Payload Blank Template
+# Payload CMS with Live Preview
 
-This template comes configured with the bare minimum to get started on anything you need.
+This template comes configured with the essentials to get started, including **live preview functionality** for real-time content editing.
+
+## 🚀 New Feature: Live Preview
+
+This template now includes live preview functionality that allows content editors to see their changes in real-time before publishing.
+
+**Key Features:**
+
+- ✅ Real-time content updates
+- ✅ Draft support for better content workflow
+- ✅ Rich text editor with live preview
+- ✅ Multi-tenant compatible
+- ✅ Visual feedback and loading states
+
+👉 **[Read the Live Preview Guide](./LIVE_PREVIEW_GUIDE.md)** for detailed setup and usage instructions.
 
 ## Quick start
 

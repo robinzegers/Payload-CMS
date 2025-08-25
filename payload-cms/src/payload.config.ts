@@ -26,6 +26,28 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    livePreview: {
+      url: ({ data, req }) => {
+        const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+        const host = req.headers.get('host') || 'localhost:3000'
+
+        // For multi-tenant setup, we need to determine the preview URL based on tenant
+        if (data.tenant) {
+          // If using tenant slugs
+          if (data.tenant.slug) {
+            return `${protocol}://${host}/tenant-slugs/${data.tenant.slug}${data.slug ? `/${data.slug}` : ''}`
+          }
+          // If using tenant domains
+          if (data.tenant.domain) {
+            return `${protocol}://${data.tenant.domain}/tenant-domains/${data.slug || ''}`
+          }
+        }
+
+        // Fallback to basic preview
+        return `${protocol}://${host}/preview${data.slug ? `/${data.slug}` : ''}`
+      },
+      collections: ['pages'],
+    },
   },
   collections: [Users, Tenants, Media, Pages, Navigation],
   editor: lexicalEditor(),
