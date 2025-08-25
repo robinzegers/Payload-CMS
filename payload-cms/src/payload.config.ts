@@ -27,13 +27,13 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     livePreview: {
-      url: ({ data, req }) => {
+      url: ({ data, req: _req }) => {
         const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
         const host =
           process.env.NODE_ENV === 'production' ? 'payload-cms-pearl.vercel.app' : 'localhost:3000'
 
         // For multi-tenant setup, we need to determine the preview URL based on tenant
-        if (data.tenant) {
+        if (data?.tenant) {
           // If using tenant slugs
           if (data.tenant.slug) {
             return `${protocol}://${host}/tenant-slugs/${data.tenant.slug}${data.slug ? `/${data.slug}` : ''}`
@@ -45,7 +45,7 @@ export default buildConfig({
         }
 
         // Fallback to basic preview
-        return `${protocol}://${host}/preview${data.slug ? `/${data.slug}` : ''}`
+        return `${protocol}://${host}/preview${data?.slug ? `/${data.slug}` : ''}`
       },
       collections: ['pages'],
     },
@@ -80,6 +80,12 @@ export default buildConfig({
       tenantField: {
         access: {
           read: () => true,
+          create: ({ req }) => {
+            if (isSuperAdmin(req.user)) {
+              return true
+            }
+            return getUserTenantIDs(req.user).length > 0
+          },
           update: ({ req }) => {
             if (isSuperAdmin(req.user)) {
               return true

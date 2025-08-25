@@ -39,7 +39,7 @@ export const Pages: CollectionConfig = {
         const host = req.headers.get('host') || 'localhost:3000'
 
         // For multi-tenant setup, we need to determine the preview URL based on tenant
-        if (data.tenant) {
+        if (data?.tenant) {
           // If using tenant slugs
           if (data.tenant.slug) {
             return `${protocol}://${host}/tenant-slugs/${data.tenant.slug}${data.slug ? `/${data.slug}` : ''}`
@@ -51,7 +51,7 @@ export const Pages: CollectionConfig = {
         }
 
         // Fallback to basic preview
-        return `${protocol}://${host}/preview?slug=${data.slug || 'home'}&id=${data.id}`
+        return `${protocol}://${host}/preview?slug=${data?.slug || 'home'}&id=${data?.id}`
       },
     },
     preview: (data) => {
@@ -59,7 +59,7 @@ export const Pages: CollectionConfig = {
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://localhost:3000`
 
       // For multi-tenant setup
-      if (data.tenant && typeof data.tenant === 'object') {
+      if (data?.tenant && typeof data.tenant === 'object') {
         const tenant = data.tenant as any
         if (tenant.slug) {
           return `${baseUrl}/tenant-slugs/${tenant.slug}${data.slug ? `/${data.slug}` : ''}`
@@ -69,7 +69,7 @@ export const Pages: CollectionConfig = {
         }
       }
 
-      return `${baseUrl}/preview?slug=${data.slug || 'home'}&id=${data.id}`
+      return `${baseUrl}/preview?slug=${data?.slug || 'home'}&id=${data?.id}`
     },
   },
   versions: {
