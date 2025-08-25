@@ -66,6 +66,38 @@ See the [Collections](https://payloadcms.com/docs/configuration/collections) doc
 
   This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
 
+  **For Production Deployment:** The media collection automatically switches to Vercel Blob storage when deployed to production. You'll need to set up the `BLOB_READ_WRITE_TOKEN` environment variable in your deployment platform (see [Media Setup for Production](#media-setup-for-production) below).
+
+## Media Setup for Production
+
+For media uploads to work in production (Vercel, Netlify, etc.), you need to configure cloud storage since serverless platforms don't support persistent file storage.
+
+### Vercel Blob Storage Setup
+
+1. **Create a Vercel Blob Store:**
+   - Go to your [Vercel Dashboard](https://vercel.com/dashboard)
+   - Navigate to Storage > Create Database > Blob
+   - Create a new blob store for your project
+
+2. **Get your Blob Token:**
+   - In your blob store settings, copy the `BLOB_READ_WRITE_TOKEN`
+
+3. **Set Environment Variables:**
+   - In your Vercel project settings, add:
+     ```
+     BLOB_READ_WRITE_TOKEN=your_token_here
+     ```
+
+4. **Deploy:**
+   - The application will automatically use Vercel Blob storage in production
+   - Local development will continue using local file storage
+
+### How it Works
+
+- **Development:** Files are stored locally in `public/media/`
+- **Production:** Files are stored in Vercel Blob storage
+- **Automatic switching:** The media collection detects the environment and switches storage adapters accordingly
+
 ### Docker
 
 Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:

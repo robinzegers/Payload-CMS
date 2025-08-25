@@ -2,6 +2,7 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -11,6 +12,7 @@ import type { Config } from './payload-types'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { MediaWithCloud } from './collections/MediaWithCloud'
 import { Pages } from './collections/Pages'
 import { Navigation } from './collections/Navigation'
 import { Tenants } from './collections/Tenants'
@@ -50,7 +52,15 @@ export default buildConfig({
       collections: ['pages'],
     },
   },
-  collections: [Users, Tenants, Media, Pages, Navigation],
+  collections: [
+    Users,
+    Tenants,
+    process.env.NODE_ENV === 'production' || process.env.BLOB_READ_WRITE_TOKEN
+      ? MediaWithCloud
+      : Media,
+    Pages,
+    Navigation,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -69,6 +79,17 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
+    // Only use Vercel Blob storage in production or when token is available
+    ...(process.env.NODE_ENV === 'production' || process.env.BLOB_READ_WRITE_TOKEN
+      ? [
+          vercelBlobStorage({
+            collections: {
+              media: true,
+            },
+            token: process.env.BLOB_READ_WRITE_TOKEN!,
+          }),
+        ]
+      : []),
     multiTenantPlugin<Config>({
       collections: {
         pages: {},
