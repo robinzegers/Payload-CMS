@@ -29,7 +29,8 @@ export default buildConfig({
     livePreview: {
       url: ({ data, req }) => {
         const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-        const host = req.headers.get('host') || 'localhost:3000'
+        const host =
+          process.env.NODE_ENV === 'production' ? 'payload-cms-pearl.vercel.app' : 'localhost:3000'
 
         // For multi-tenant setup, we need to determine the preview URL based on tenant
         if (data.tenant) {
