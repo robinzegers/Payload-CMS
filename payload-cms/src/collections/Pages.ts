@@ -56,20 +56,20 @@ export const Pages: CollectionConfig = {
     },
     preview: (data) => {
       const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-      const host = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://localhost:3000`
 
       // For multi-tenant setup
       if (data.tenant && typeof data.tenant === 'object') {
         const tenant = data.tenant as any
         if (tenant.slug) {
-          return `${protocol}://${host}/tenant-slugs/${tenant.slug}${data.slug ? `/${data.slug}` : ''}`
+          return `${baseUrl}/tenant-slugs/${tenant.slug}${data.slug ? `/${data.slug}` : ''}`
         }
         if (tenant.domain) {
           return `${protocol}://${tenant.domain}/tenant-domains/${data.slug || ''}`
         }
       }
 
-      return `${host}/preview?slug=${data.slug || 'home'}&id=${data.id}`
+      return `${baseUrl}/preview?slug=${data.slug || 'home'}&id=${data.id}`
     },
   },
   versions: {
