@@ -8,6 +8,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import type { Config } from './payload-types'
 
 import { Users } from './collections/Users'
@@ -150,5 +151,8 @@ export default buildConfig({
       tenantSelectorLabel: 'Select a campaign',
       userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
+    importExportPlugin({
+      collections: ['pages'],
+    })
   ],
 })
