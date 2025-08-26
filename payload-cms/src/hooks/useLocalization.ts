@@ -101,20 +101,20 @@ export function useLocalization({
   }
 }
 
-import { getLocaleLabel } from '../utilities/dynamic-locales'
-
 /**
  * Helper function to get supported locale labels
  */
 export function getLocaleLabels(): Record<string, string> {
-  const labels: Record<string, string> = {}
-  
-  // Common locale codes that might be used
-  const commonLocales = ['en', 'es', 'fr', 'de', 'nl', 'it', 'pt', 'zh', 'ja', 'ko']
-  
-  commonLocales.forEach(code => {
-    labels[code] = getLocaleLabel(code)
-  })
-  
-  return labels
+  return {
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    nl: 'Nederlands',
+    it: 'Italiano',
+    pt: 'Português',
+    zh: '中文',
+    ja: '日本語',
+    ko: '한국어',
+  }
 }
