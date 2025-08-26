@@ -85,6 +85,22 @@ export default buildConfig({
     ],
     defaultLocale: 'en',
     fallback: true,
+    filterAvailableLocales: async ({req, locales}) => {
+      if (getUserTenantIDs(req.user).length > 0) {
+        const fullTenant = await req.payload.findByID({
+          id: getUserTenantIDs(req.user)[0],
+          collection: 'tenants',
+          req
+        })
+        if (fullTenant && fullTenant.gameSettings?.languages?.length) {
+          return locales.filter((locale) => {
+            return fullTenant?.gameSettings?.languages?.some((language) => language.language === locale.code)
+          })
+        }
+      }
+     
+      return locales;
+    },
   },
   collections: [
     Users,
