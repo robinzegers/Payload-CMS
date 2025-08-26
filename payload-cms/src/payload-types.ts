@@ -71,7 +71,6 @@ export interface Config {
     tenants: Tenant;
     media: Media;
     pages: Page;
-    navigation: Navigation;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -82,7 +81,6 @@ export interface Config {
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
-    navigation: NavigationSelect<false> | NavigationSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -376,7 +374,26 @@ export interface Page {
   id: number;
   tenant?: (number | null) | Tenant;
   title: string;
+  pageType: 'standard' | 'landing' | 'leaderboard' | 'loading';
+  /**
+   * A brief description for the landing page
+   */
+  landingDescription?: string | null;
+  /**
+   * A brief description for the loading page
+   */
+  loadingDescription?: string | null;
+  /**
+   * A brief description for the leaderboard page
+   */
+  leaderboardDescription?: string | null;
+  /**
+   * URL-friendly version of the page title
+   */
   slug: string;
+  /**
+   * Page content in rich text format
+   */
   content?: {
     root: {
       type: string;
@@ -396,29 +413,6 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation".
- */
-export interface Navigation {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  label: string;
-  url?: string | null;
-  page?: (number | null) | Page;
-  openInNewTab?: boolean | null;
-  children?:
-    | {
-        label: string;
-        url?: string | null;
-        page?: (number | null) | Page;
-        openInNewTab?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -442,10 +436,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
-      } | null)
-    | ({
-        relationTo: 'navigation';
-        value: number | Navigation;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -655,34 +645,16 @@ export interface MediaSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   tenant?: T;
   title?: T;
+  pageType?: T;
+  landingDescription?: T;
+  loadingDescription?: T;
+  leaderboardDescription?: T;
   slug?: T;
   content?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation_select".
- */
-export interface NavigationSelect<T extends boolean = true> {
-  tenant?: T;
-  label?: T;
-  url?: T;
-  page?: T;
-  openInNewTab?: T;
-  children?:
-    | T
-    | {
-        label?: T;
-        url?: T;
-        page?: T;
-        openInNewTab?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

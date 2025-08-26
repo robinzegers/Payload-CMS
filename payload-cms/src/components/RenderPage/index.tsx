@@ -102,15 +102,61 @@ const renderRichText = (content: any): React.ReactNode => {
 }
 
 export const RenderPage = ({ data }: { data: Page }) => {
+  const isLandingPage = data.pageType === 'landing'
+
+  // Get the appropriate description based on page type
+  const getDescription = () => {
+    switch (data.pageType) {
+      case 'landing':
+        return data.landingDescription
+      case 'loading':
+        return data.loadingDescription
+      case 'leaderboard':
+        return data.leaderboardDescription
+      default:
+        return null
+    }
+  }
+
+  const description = getDescription()
+
   return (
     <React.Fragment>
       <form action="/api/users/logout" method="post">
         <button type="submit">Logout</button>
       </form>
-      <div>
-        <h1>{data.title}</h1>
-        {data.content && renderRichText(data.content)}
-        {!data.content && <p>No content available</p>}
+      <div className={isLandingPage ? 'landing-page' : 'standard-page'}>
+        {isLandingPage ? (
+          // Landing page layout
+          <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+            <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#333' }}>{data.title}</h1>
+            {description && (
+              <p
+                style={{
+                  fontSize: '1.2rem',
+                  color: '#666',
+                  maxWidth: '600px',
+                  margin: '0 auto 2rem',
+                  lineHeight: '1.6',
+                }}
+              >
+                {description}
+              </p>
+            )}
+            {data.content && (
+              <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
+                {renderRichText(data.content)}
+              </div>
+            )}
+          </div>
+        ) : (
+          // Standard page layout
+          <div>
+            <h1>{data.title}</h1>
+            {data.content && renderRichText(data.content)}
+            {!data.content && <p>No content available</p>}
+          </div>
+        )}
       </div>
       <div
         style={{

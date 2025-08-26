@@ -14,8 +14,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { MediaWithCloud } from './collections/MediaWithCloud'
 import { Pages } from './collections/Pages'
-import { Navigation } from './collections/Navigation'
-import { Tenants } from './collections/Tenants'
+import { Campaigns } from './collections/Campaigns'
 import { isSuperAdmin, getUserTenantIDs } from './utilities/access'
 import { seed } from './seed'
 
@@ -34,18 +33,6 @@ export default buildConfig({
         const host =
           process.env.NODE_ENV === 'production' ? 'payload-cms-pearl.vercel.app' : 'localhost:3000'
 
-        // For multi-tenant setup, we need to determine the preview URL based on tenant
-        if (data?.tenant) {
-          // If using tenant slugs
-          if (data.tenant.slug) {
-            return `${protocol}://${host}/tenant-slugs/${data.tenant.slug}${data.slug ? `/${data.slug}` : ''}`
-          }
-          // If using tenant domains
-          if (data.tenant.domain) {
-            return `${protocol}://${data.tenant.domain}/tenant-domains/${data.slug || ''}`
-          }
-        }
-
         // Fallback to basic preview
         return `${protocol}://${host}/preview${data?.slug ? `/${data.slug}` : ''}`
       },
@@ -54,12 +41,11 @@ export default buildConfig({
   },
   collections: [
     Users,
-    Tenants,
+    Campaigns,
     process.env.NODE_ENV === 'production' || process.env.BLOB_READ_WRITE_TOKEN
       ? MediaWithCloud
       : Media,
     Pages,
-    Navigation,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -94,9 +80,6 @@ export default buildConfig({
       collections: {
         pages: {},
         media: {},
-        navigation: {
-          isGlobal: true,
-        },
       },
       tenantField: {
         access: {
@@ -118,6 +101,7 @@ export default buildConfig({
       tenantsArrayField: {
         includeDefaultField: false,
       },
+      tenantSelectorLabel: 'Select a campaign',
       userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
   ],

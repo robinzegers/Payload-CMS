@@ -168,6 +168,7 @@ export const seed: NonNullable<Config['onInit']> = async (payload): Promise<void
     data: {
       title: 'Home Page - Gold Tenant',
       slug: 'home-gold',
+      pageType: 'standard',
       tenant: tenant1.id,
       content: {
         root: {
@@ -201,6 +202,7 @@ export const seed: NonNullable<Config['onInit']> = async (payload): Promise<void
     data: {
       title: 'Home Page - Silver Tenant',
       slug: 'home-silver',
+      pageType: 'standard',
       tenant: tenant2.id,
       content: {
         root: {
@@ -234,6 +236,7 @@ export const seed: NonNullable<Config['onInit']> = async (payload): Promise<void
     data: {
       title: 'Public Home Page - Bronze Tenant',
       slug: 'home-bronze',
+      pageType: 'standard',
       tenant: tenant3.id,
       content: {
         root: {

@@ -38,18 +38,6 @@ export const Pages: CollectionConfig = {
         const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
         const host = req.headers.get('host') || 'localhost:3000'
 
-        // For multi-tenant setup, we need to determine the preview URL based on tenant
-        if (data?.tenant) {
-          // If using tenant slugs
-          if (data.tenant.slug) {
-            return `${protocol}://${host}/tenant-slugs/${data.tenant.slug}${data.slug ? `/${data.slug}` : ''}`
-          }
-          // If using tenant domains
-          if (data.tenant.domain) {
-            return `${protocol}://${data.tenant.domain}/tenant-domains/${data.slug || ''}`
-          }
-        }
-
         // Fallback to basic preview
         return `${protocol}://${host}/preview?slug=${data?.slug || 'home'}&id=${data?.id}`
       },
@@ -57,17 +45,6 @@ export const Pages: CollectionConfig = {
     preview: (data) => {
       const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://localhost:3000`
-
-      // For multi-tenant setup
-      if (data?.tenant && typeof data.tenant === 'object') {
-        const tenant = data.tenant as any
-        if (tenant.slug) {
-          return `${baseUrl}/tenant-slugs/${tenant.slug}${data.slug ? `/${data.slug}` : ''}`
-        }
-        if (tenant.domain) {
-          return `${protocol}://${tenant.domain}/tenant-domains/${data.slug || ''}`
-        }
-      }
 
       return `${baseUrl}/preview?slug=${data?.slug || 'home'}&id=${data?.id}`
     },
@@ -88,16 +65,92 @@ export const Pages: CollectionConfig = {
       required: true,
     },
     {
-      name: 'slug',
-      type: 'text',
+      name: 'pageType',
+      type: 'select',
+      options: [
+        {
+          label: 'Standard Page',
+          value: 'standard',
+        },
+        {
+          label: 'Landing Page',
+          value: 'landing',
+        },
+        {
+          label: 'Leaderboard page',
+          value: 'leaderboard',
+        },
+        {
+          label: 'Loading Page',
+          value: 'loading',
+        },
+      ],
+      defaultValue: 'standard',
       required: true,
       admin: {
         position: 'sidebar',
       },
     },
     {
+      name: 'landingDescription',
+      type: 'textarea',
+      admin: {
+        condition: (data) => data.pageType === 'landing',
+        description: 'A brief description for the landing page',
+      },
+    },
+    {
+      name: 'loadingDescription',
+      type: 'textarea',
+      admin: {
+        condition: (data) => data.pageType === 'loading',
+        description: 'A brief description for the loading page',
+      },
+    },
+    {
+      name: 'leaderboardDescription',
+      type: 'textarea',
+      admin: {
+        condition: (data) => data.pageType === 'leaderboard',
+        description: 'A brief description for the leaderboard page',
+      },
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      admin: {
+        position: 'sidebar',
+        description: 'URL-friendly version of the page title',
+      },
+      validate: async (val: any, { data, req }: any) => {
+        // Check for duplicate slugs within the same tenant
+        if (val && data?.tenant) {
+          const existingPages = await req.payload.find({
+            collection: 'pages',
+            where: {
+              and: [
+                { slug: { equals: val } },
+                { tenant: { equals: data.tenant } },
+                { id: { not_equals: data.id || '' } },
+              ],
+            },
+            limit: 1,
+          })
+
+          if (existingPages.docs.length > 0) {
+            return `A page with slug "${val}" already exists in this campaign. Please choose a different slug.`
+          }
+        }
+        return true
+      },
+    },
+    {
       name: 'content',
       type: 'richText',
+      admin: {
+        description: 'Page content in rich text format',
+      },
     },
     {
       name: 'status',
