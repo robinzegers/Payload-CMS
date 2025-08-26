@@ -63,6 +63,7 @@ export const Pages: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'pageType',
@@ -94,6 +95,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'landingDescription',
       type: 'textarea',
+      localized: true,
       admin: {
         condition: (data) => data.pageType === 'landing',
         description: 'A brief description for the landing page',
@@ -102,6 +104,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'loadingDescription',
       type: 'textarea',
+      localized: true,
       admin: {
         condition: (data) => data.pageType === 'loading',
         description: 'A brief description for the loading page',
@@ -110,6 +113,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'leaderboardDescription',
       type: 'textarea',
+      localized: true,
       admin: {
         condition: (data) => data.pageType === 'leaderboard',
         description: 'A brief description for the leaderboard page',
@@ -148,6 +152,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
+      localized: true,
       admin: {
         description: 'Page content in rich text format',
       },

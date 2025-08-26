@@ -39,6 +39,52 @@ export default buildConfig({
       collections: ['pages'],
     },
   },
+  localization: {
+    locales: [
+      {
+        label: 'English',
+        code: 'en',
+      },
+      {
+        label: 'Spanish',
+        code: 'es',
+      },
+      {
+        label: 'French',
+        code: 'fr',
+      },
+      {
+        label: 'German',
+        code: 'de',
+      },
+      {
+        label: 'Dutch',
+        code: 'nl',
+      },
+      {
+        label: 'Italian',
+        code: 'it',
+      },
+      {
+        label: 'Portuguese',
+        code: 'pt',
+      },
+      {
+        label: 'Chinese',
+        code: 'zh',
+      },
+      {
+        label: 'Japanese',
+        code: 'ja',
+      },
+      {
+        label: 'Korean',
+        code: 'ko',
+      },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
   collections: [
     Users,
     Campaigns,

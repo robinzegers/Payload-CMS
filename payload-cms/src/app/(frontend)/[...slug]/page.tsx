@@ -6,28 +6,48 @@ import React from 'react'
 import config from '@/payload.config'
 import { RenderPage } from '@/components/RenderPage'
 import { LivePreviewProvider } from '@/components/LivePreviewProvider'
+import { LocalizationProvider } from '@/components/LocalizationComponents'
+import { getBestLocale } from '@/utilities/localization'
 
 type Props = {
   params: Promise<{
     slug?: string[]
   }>
+  searchParams: Promise<{
+    tenant?: string
+    locale?: string
+  }>
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { slug } = await params
+  const { tenant, locale } = await searchParams
   const payload = await getPayload({ config })
 
   // Convert slug array to string
   const slugString = slug ? slug.join('/') : 'home'
 
+  // If no tenant is specified, show a tenant selection page or redirect
+  if (!tenant) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h1>Please select a campaign</h1>
+        <p>Add ?tenant=CAMPAIGN_ID to the URL to view campaign content.</p>
+      </div>
+    )
+  }
+
   try {
+    // Get the best locale for this tenant
+    const bestLocale = locale ? await getBestLocale(payload, tenant, locale) : 'en'
+
     const pageQuery = await payload.find({
       collection: 'pages',
       where: {
-        slug: {
-          equals: slugString,
-        },
+        and: [{ slug: { equals: slugString } }, { tenant: { equals: tenant } }],
       },
+      locale: bestLocale as any,
+      fallbackLocale: 'en',
       limit: 1,
     })
 
@@ -38,9 +58,11 @@ export default async function Page({ params }: Props) {
     }
 
     return (
-      <LivePreviewProvider>
-        <RenderPage data={page} />
-      </LivePreviewProvider>
+      <LocalizationProvider tenant={tenant} locale={bestLocale} fallbackLocale="en">
+        <LivePreviewProvider>
+          <RenderPage data={page} />
+        </LivePreviewProvider>
+      </LocalizationProvider>
     )
   } catch (error) {
     console.error('Error fetching page:', error)
@@ -48,19 +70,28 @@ export default async function Page({ params }: Props) {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
+  const { tenant, locale } = await searchParams
   const payload = await getPayload({ config })
   const slugString = slug ? slug.join('/') : 'home'
 
+  if (!tenant) {
+    return {
+      title: 'Campaign Selection Required',
+    }
+  }
+
   try {
+    const bestLocale = locale ? await getBestLocale(payload, tenant, locale) : 'en'
+
     const pageQuery = await payload.find({
       collection: 'pages',
       where: {
-        slug: {
-          equals: slugString,
-        },
+        and: [{ slug: { equals: slugString } }, { tenant: { equals: tenant } }],
       },
+      locale: bestLocale as any,
+      fallbackLocale: 'en',
       limit: 1,
     })
 
@@ -72,8 +103,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }
     }
 
+    // Get localized title
+    const title =
+      typeof page.title === 'object' && page.title[bestLocale]
+        ? page.title[bestLocale]
+        : page.title || 'Untitled Page'
+
     return {
-      title: page.title || 'Untitled Page',
+      title: title as string,
     }
   } catch {
     return {

@@ -1,5 +1,6 @@
 import type { Page } from '@/payload-types'
 import React from 'react'
+import { LocalizedText, LanguageSwitcher } from '../LocalizationComponents'
 
 // Simple rich text renderer for Lexical content
 const renderRichText = (content: any): React.ReactNode => {
@@ -104,45 +105,30 @@ const renderRichText = (content: any): React.ReactNode => {
 export const RenderPage = ({ data }: { data: Page }) => {
   const isLandingPage = data.pageType === 'landing'
 
-  // Get the appropriate description based on page type
-  const getDescription = () => {
-    switch (data.pageType) {
-      case 'landing':
-        return data.landingDescription
-      case 'loading':
-        return data.loadingDescription
-      case 'leaderboard':
-        return data.leaderboardDescription
-      default:
-        return null
-    }
-  }
-
-  const description = getDescription()
-
   return (
     <React.Fragment>
-      <form action="/api/users/logout" method="post">
-        <button type="submit">Logout</button>
-      </form>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+        }}
+      >
+        <form action="/api/users/logout" method="post">
+          <button type="submit">Logout</button>
+        </form>
+        <LanguageSwitcher className="language-switcher" />
+      </div>
+
       <div className={isLandingPage ? 'landing-page' : 'standard-page'}>
         {isLandingPage ? (
           // Landing page layout
           <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-            <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#333' }}>{data.title}</h1>
-            {description && (
-              <p
-                style={{
-                  fontSize: '1.2rem',
-                  color: '#666',
-                  maxWidth: '600px',
-                  margin: '0 auto 2rem',
-                  lineHeight: '1.6',
-                }}
-              >
-                {description}
-              </p>
-            )}
+            <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#333' }}>
+              <LocalizedText data={data} field="title" fallback="Page Title" />
+            </h1>
+            <LocalizedText data={data} field="landingDescription" fallback="" />
             {data.content && (
               <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
                 {renderRichText(data.content)}
@@ -152,12 +138,29 @@ export const RenderPage = ({ data }: { data: Page }) => {
         ) : (
           // Standard page layout
           <div>
-            <h1>{data.title}</h1>
+            <h1>
+              <LocalizedText data={data} field="title" fallback="Page Title" />
+            </h1>
+
+            {/* Show appropriate description based on page type */}
+            {data.pageType === 'loading' && (
+              <p style={{ fontSize: '1.2rem', color: '#666', marginBottom: '2rem' }}>
+                <LocalizedText data={data} field="loadingDescription" fallback="" />
+              </p>
+            )}
+
+            {data.pageType === 'leaderboard' && (
+              <p style={{ fontSize: '1.2rem', color: '#666', marginBottom: '2rem' }}>
+                <LocalizedText data={data} field="leaderboardDescription" fallback="" />
+              </p>
+            )}
+
             {data.content && renderRichText(data.content)}
             {!data.content && <p>No content available</p>}
           </div>
         )}
       </div>
+
       <div
         style={{
           marginTop: '2rem',
